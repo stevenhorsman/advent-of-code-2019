@@ -6,10 +6,12 @@ class IntCode:
         self.runFunction = runFunction
 
     def run(self, memory, input1, input2, output):
-       memory[output] = self.runFunction(memory, input1, input2)
+       result = self.runFunction(memory, input1, input2)
+    #    print(self.name, memory[input1], memory[input2], "=", result)
+       memory[output] = result
 
 opcodes = {}
-def addOpCode(opcode, name, op): 
+def addOpCode(opcode, name, op):  
     opcodes[opcode] = IntCode(name, op)
 
 addOpCode(1, 'add', lambda memory, noun, verb: memory[noun] + memory[verb])

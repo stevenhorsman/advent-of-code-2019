@@ -28,32 +28,8 @@ def check_execute(input, output):
     data = input.split(",")
     assert program_alarm.execute(data) == [int(i) for i in output.split(",")]
 
-
-# def test_part2_12():
-#     data = """12"""
-#     assert program_alarm.part2(data) == 2
-
-# def test_part2_14():
-#     data = """14"""
-#     assert program_alarm.part2(data) == 2
-
-# def test_part2_1969():
-#     data = """1969"""
-#     assert program_alarm.part2(data) == 966
-
-# def test_part2_100756():
-#     data = """100756"""
-#     assert program_alarm.part2(data) == 50346
-
-# def test_part2_example():
-#     data = """12
-#         14
-#         1969
-#         100756"""
-#     assert program_alarm.part2(data) == 51316
-
-# def test_part2():
-#     with open(input_file) as f:
-#        data = f.read()
-#     expected = 5020211
-#     assert program_alarm.part2(data) == expected
+def test_part2():
+    with open(input_file) as f:
+       data = f.read()
+    expected = 4925
+    assert program_alarm.part2(data) == expected

@@ -8,9 +8,6 @@ def part1(input, noun="12", verb="2"):
     result = assembler.execute(inputs)
     return result[0]
 
-def execute(inputs):
-    return assembler.execute(inputs)
-
 def part2(input):
     for noun in range(1, 100):
         for verb in range(1, 100):

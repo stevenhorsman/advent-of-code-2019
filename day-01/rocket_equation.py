@@ -15,3 +15,10 @@ def recursive_fuel_calc(input):
 def part2(input):
     lines = input.splitlines()
     return sum(recursive_fuel_calc(int(line)) for line in lines)
+
+if __name__ == "__main__":
+    input_file = 'day-01/input.txt'
+    with open(input_file) as f:
+       data = f.read()
+    print("Part 1: ", part1(data))
+    print("Part 2: ", part2(data))

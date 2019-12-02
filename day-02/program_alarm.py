@@ -1,6 +1,7 @@
 import sys
 
 def part1(inputs):
+    inputs = inputs.split(",")
     inputs[1]="12"
     inputs[2]="2"
     result = execute(inputs)

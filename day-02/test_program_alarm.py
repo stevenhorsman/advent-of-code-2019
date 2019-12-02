@@ -18,15 +18,10 @@ def test_part1_example_4():
 def test_part1_example_5():
     check_execute("1,9,10,3,2,3,11,0,99,30,40,50", "3500,9,10,70,2,3,11,0,99,30,40,50")
 
-def test_part1_example():
-    data = """1,9,10,3,2,3,11,0,99,30,40,50""".split(",")
-    expected = 3500
-    assert program_alarm.part1(data) == expected
-
 def test_part1():
     with open(input_file) as f:
        data = f.read()
-    expected = 3342050
+    expected = 5305097
     assert program_alarm.part1(data) == expected
 
 def check_execute(input, output):

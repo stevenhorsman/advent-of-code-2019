@@ -23,7 +23,7 @@ def main():
     response = requests.get(url=input_url, cookies=cookies, headers=headers)
     response.raise_for_status() # ensure we notice bad responses
     file = open(day_string+os.path.sep+"input.txt", "w")
-    file.write(response.text)
+    file.write(response.text.rstrip("\r\n"))
     file.close()
 
     os.rename(day_string+os.path.sep+template_name +".py", day_string + os.path.sep+name + ".py")

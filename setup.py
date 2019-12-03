@@ -2,16 +2,25 @@ import sys
 import shutil
 import os
 import requests
+import argparse
+from datetime import date
 
 template_day = '03'
 template_name = 'crossed_wires'
 
 def main():
-    day = sys.argv[1]
+    parser = argparse.ArgumentParser(description='An advent of code setup script')
+    parser.add_argument("-name")
+    parser.add_argument("-day", default=date.today().strftime("%d"))
+
+    args = parser.parse_args()
+    name = args.name
+    day = args.day
+
     day_string = 'day-' + day.zfill(2)
-    name = sys.argv[2]
 
     print("Creating day %s with name %s" % (day, name))
+
     shutil.copytree('day-' + template_day, day_string)
     shutil.rmtree(day_string + os.path.sep + '__pycache__')
 

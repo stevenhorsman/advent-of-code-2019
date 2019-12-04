@@ -1,63 +1,34 @@
 import sys
+from collections import Counter
 
 input_file = 'day-04/input.txt'
 
-def part1(input):
+def is_length_6(digits):
+    return len(digits) == 6
+
+def is_in_order(digits):
+    return sorted(digits) == digits
+
+def has_repeats(digits):
+    return any(x >= 2 for x in Counter(digits).values())
+
+def has_double(digits):
+    return any(x == 2 for x in Counter(digits).values())
+
+def test_password(input, count_filter):
     start,end = [int(string) for string in input.split('-')]
 
-    matches = []
+    digits_list = map(lambda input: [int(char) for char in str(input)], range(start, end))
+    matches = list(filter(lambda x: (is_in_order(x)
+        and count_filter(x) 
+        and is_length_6(x)), digits_list))
+    return matches
 
-    for i in range(start, end):
-        if meets_critera(i):
-            matches.append(i)
-    print(matches)
-    return len(matches)
-
-def meets_critera(input):
-    digits = [int(char) for char in str(input)]
-    if len(digits) != 6:
-        return False
-
-    double_found = False
-   
-    for i in range(len(digits)-1):
-        if digits[i] == digits[i+1] :
-            double_found = True
-        if digits[i] > digits[i+1] :
-            return False # It decreases
-
-    return double_found
+def part1(input):
+    return len(test_password(input, has_repeats))
 
 def part2(input):
-    start,end = [int(string) for string in input.split('-')]
-
-    matches = []
-
-    for i in range(start, end):
-        if meets_critera2(i):
-            matches.append(i)
-    print(matches)
-    return len(matches)
-
-def meets_critera2(input):
-    digits = [int(char) for char in str(input)]
-    if len(digits) != 6:
-        return False
-
-    double_found = False
-   
-    for i in range(len(digits)-1):
-        if digits[i] == digits[i+1] :
-            if i < len(digits)-2:
-                if digits[i] != digits[i+2] :
-                    double_found = True
-            else:
-                double_found = True
-        
-        if digits[i] > digits[i+1] :
-            return False # It decreases
-
-    return double_found
+    return len(test_password(input, has_double))
 
 if __name__ == "__main__":
     with open(input_file) as f:

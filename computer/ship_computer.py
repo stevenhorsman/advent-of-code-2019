@@ -8,13 +8,17 @@ class ShipComputer:
     self.instruction_pointer = 0
     self.input = input
     self.output = []
-
-    self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]]), 3)
-    self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]]), 3)
-    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.input), 1)
-    self.addOpCode(4, 'output', lambda memory, params: (None, self.output.append(memory[params[0]])), 1)
-    self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0]), 2)
-    self.addOpCode(99, 'halt', lambda memory, params: (None, None), 0)
+# TODO consider using update_ip to make all the logic for ip in IntCode and remove ip-offset parameter and put params.length in function?
+    self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]], None), 3)
+    self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]], None), 3)
+    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.input, None), 1)
+    self.addOpCode(4, 'output', lambda memory, params: (None, self.output.append(memory[params[0]]), None), 1)
+    self.addOpCode(5, 'jump-if-true', lambda memory, params: (None, None, None if memory[params[0]] == 0 else memory[params[1]]), 2, 0)
+    self.addOpCode(6, 'jump-if-false', lambda memory, params: (None, None, None if memory[params[0]] != 0 else memory[params[1]]), 2, 0)
+    self.addOpCode(7, 'less-than', lambda memory, params: (params[2], 1 if memory[params[0]] < memory[params[1]] else 0, None), 3)
+    self.addOpCode(8, 'equals', lambda memory, params: (params[2], 1 if memory[params[0]] == memory[params[1]] else 0, None), 3)
+    self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0], None), 2)
+    self.addOpCode(99, 'halt', lambda memory, params: (None, None, None), 0)
 
   def get_memory(self):
     return self.memory
@@ -47,13 +51,13 @@ class ShipComputer:
       #parameters = self.memory[self.instruction_pointer + 1:self.instruction_pointer + parm_length + 1]
       # TODO slice the number of arguments
       curr_inst.run(parm_addresses)
-      self.instruction_pointer += curr_inst.ip_offset
+      # self.instruction_pointer += curr_inst.ip_offset
     else:
       sys.stderr.write("Error - IP opcode" + self.memory[self.instruction_pointer])
     return self.instruction_pointer
 
   def createIntCode(self, name, run_function, parameterLength, ip_offset=None):
-    return ShipComputer.IntCode(self, name, run_function, parameterLength, ip_offset=None)
+    return ShipComputer.IntCode(self, name, run_function, parameterLength, ip_offset)
 
   class IntCode:
     def __init__(self, outer, name, run_function, parameterLength, ip_offset=None):
@@ -64,6 +68,10 @@ class ShipComputer:
       self.ip_offset = ip_offset if ip_offset != None else parameterLength + 1
 
     def run(self, params):
-      output, result = self.run_function(self.computer.memory, params)
+      output, result, new_ip = self.run_function(self.computer.memory, params)
       if (output != None):
         self.computer.memory[output] = result
+      if (new_ip != None):
+        self.computer.instruction_pointer = new_ip
+      else:
+        self.computer.instruction_pointer += self.parameterLength + 1

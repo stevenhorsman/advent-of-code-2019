@@ -40,13 +40,41 @@ def execute(initial_memory, input = None):
   ship_computer.execute()
   return ship_computer
 
-def test_jump_if_true_doesnt_jumps():
+def test_jump_if_true_does_nothing_when_not_true():
   ship_computer = execute("1105,0,6,4,1,99,4,0,99")
   assert ship_computer.output == [0]
 
-def test_jump_if_true_jumps():
+def test_jump_if_true_jumps_when_true():
   ship_computer = execute("1105,1,6,4,1,99,4,0,99")
   assert ship_computer.output == [1105]
+
+def test_jump_if_false_does_nothing_when_not_false():
+  ship_computer = execute("1106,1,6,4,1,99,4,0,99")
+  assert ship_computer.output == [1]
+
+def test_jump_if_false_jumps_when_false():
+  ship_computer = execute("1106,0,6,4,1,99,4,0,99")
+  assert ship_computer.output == [1106]
+
+def test_less_than_when_true():
+  ship_computer = execute("11107,0,1,-1,4,3,99")
+  assert ship_computer.output == [1]
+
+def test_less_than_when_false_1():
+  ship_computer = execute("11107,1,1,-1,4,3,99")
+  assert ship_computer.output == [0]
+
+def test_less_than_when_false_2():
+  ship_computer = execute("11107,1,0,-1,4,3,99")
+  assert ship_computer.output == [0]
+
+def test_equals_when_true():
+  ship_computer = execute("1108,1,1,-1,4,3,99")
+  assert ship_computer.output == [1]
+
+def test_equals_when_false_1():
+  ship_computer = execute("1108,0,1,-1,4,3,99")
+  assert ship_computer.output == [0]
 
 def test_equals_8_position_mode():
   program = "3,9,8,9,10,9,4,9,99,-1,8"

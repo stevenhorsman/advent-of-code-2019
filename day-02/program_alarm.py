@@ -1,11 +1,12 @@
 import sys
-import assembler
+from ship_computer import ShipComputer
 
 def part1(input, noun="12", verb="2"):
     inputs = input.split(",").copy()
     inputs[1] = noun
     inputs[2] = verb
-    result = assembler.execute(inputs)
+    ship_computer = ShipComputer(inputs)
+    result = ship_computer.execute()
     return result[0]
 
 def part2(input):

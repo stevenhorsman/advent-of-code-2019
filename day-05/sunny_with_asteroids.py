@@ -1,15 +1,15 @@
-import assembler_2
+from ship_computer import ShipComputer
 
 input_file = 'day-05/input.txt'
 
-def part1(input, noun="12", verb="2"):
-    inputs = input.split(",").copy()
-    inputs[1] = noun
-    inputs[2] = verb
-    result = assembler.execute(inputs)
+def part1(memory, input):
+    memory = memory.split(",").copy()
+    ship_computer = ShipComputer(memory, input)
+    ship_computer.execute()
     return result[0]
 
 def part2(input):
+    pass
     for noun in range(1, 100):
         for verb in range(1, 100):
             if part1(input, str(noun), str(verb)) == 19690720:

@@ -12,8 +12,8 @@ def test_mul_99_99_3():
 def test_seti():
     check_execute("98,1,0,99", "1,1,0,99")
 
-# def test_add_010():
-#   check_execute("1002,4,3,4,33", "1002,4,3,4,99")
+def test_mul_immediate():
+  check_execute("1002,4,3,4,33", "1002,4,3,4,99")
 
 # def test_negative_add():
 #   check_execute("1101,100,-1,4,0", "1101,100,-1,4,99")

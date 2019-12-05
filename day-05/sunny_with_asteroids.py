@@ -1,12 +1,14 @@
+import sys
 from ship_computer import ShipComputer
 
 input_file = 'day-05/input.txt'
 
-def part1(memory, input):
+def part1(memory, input = 1):
     memory = memory.split(",").copy()
     ship_computer = ShipComputer(memory, input)
     ship_computer.execute()
-    return result[0]
+    print('output',ship_computer.get_output())
+    return ship_computer.get_output()[-1]
 
 def part2(input):
     pass

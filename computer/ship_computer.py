@@ -9,12 +9,12 @@ class ShipComputer:
     self.input = input
     self.output = []
 
-    self.addOpCode(1, 'add', lambda memory, arguments: (arguments[2], memory[arguments[0]] + memory[arguments[1]]), 3)
-    self.addOpCode(2, 'mul', lambda memory, arguments: (arguments[2], memory[arguments[0]] * memory[arguments[1]]), 3)
-    self.addOpCode(3, 'input', lambda memory, arguments: (arguments[0], self.input), 1)
-    self.addOpCode(4, 'output', lambda memory, arguments: (None, self.output.append(memory[arguments[0]])), 1)
-    self.addOpCode(98, 'seti', lambda memory, arguments: (arguments[1], arguments[0]), 2)
-    self.addOpCode(99, 'halt', lambda memory, arguments: (None, None), 0)
+    self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]]), 3)
+    self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]]), 3)
+    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.input), 1)
+    self.addOpCode(4, 'output', lambda memory, params: (None, self.output.append(memory[params[0]])), 1)
+    self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0]), 2)
+    self.addOpCode(99, 'halt', lambda memory, params: (None, None), 0)
 
   def get_memory(self):
     return self.memory
@@ -31,13 +31,22 @@ class ShipComputer:
     return self.memory
 
   def execute_instruction(self):
-    opcode = self.memory[self.instruction_pointer]
+    instruction = self.memory[self.instruction_pointer]
+    opcode = instruction % 100
+    param_modes = [(instruction // 100 ) % 10, (instruction // 1000 ) % 10, (instruction // 10000 ) % 10]
     if opcode in self.opcodes.keys():
       curr_inst = self.opcodes[opcode]
       parm_length = curr_inst.parameterLength
-      parameters = self.memory[self.instruction_pointer + 1:self.instruction_pointer + parm_length + 1]
+      parm_addresses = []
+      for i in range(0, curr_inst.parameterLength):
+        memory_address = self.instruction_pointer + 1 + i
+        if param_modes[i] == 0: # position, not immediate, so dereference
+          memory_address = self.memory[memory_address]
+        parm_addresses.append(memory_address)
+
+      #parameters = self.memory[self.instruction_pointer + 1:self.instruction_pointer + parm_length + 1]
       # TODO slice the number of arguments
-      curr_inst.run(parameters)
+      curr_inst.run(parm_addresses)
       self.instruction_pointer += curr_inst.ip_offset
     else:
       sys.stderr.write("Error - IP opcode" + self.memory[self.instruction_pointer])

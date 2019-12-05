@@ -16,11 +16,11 @@ import fileinput
 # U98,R91,D20,R16,D67,R40,U7,R15,U6,R7"""
 #     assert sunny_with_asteroids.part1(data) == 135
 
-# def test_part1():
-#     with open(sunny_with_asteroids.input_file) as f:
-#        data = f.read()
-#     expected = 221
-#     assert sunny_with_asteroids.part1(data) == expected
+def test_part1():
+    with open(sunny_with_asteroids.input_file) as f:
+       data = f.read()
+    expected = 13978427
+    assert sunny_with_asteroids.part1(data,1) == expected
 
 # def test_part2_example_1():
 #     data = """R8,U5,L5,D3

@@ -69,11 +69,11 @@ def test_less_than_when_false_2():
   assert ship_computer.output == [0]
 
 def test_equals_when_true():
-  ship_computer = execute("1108,1,1,-1,4,3,99")
+  ship_computer = execute("11108,1,1,-1,4,3,99")
   assert ship_computer.output == [1]
 
-def test_equals_when_false_1():
-  ship_computer = execute("1108,0,1,-1,4,3,99")
+def test_equals_when_false():
+  ship_computer = execute("11108,0,1,-1,4,3,99")
   assert ship_computer.output == [0]
 
 def test_equals_8_position_mode():

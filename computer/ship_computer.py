@@ -1,17 +1,20 @@
 import sys
+from collections import deque
 
 class ShipComputer:
 
-  def __init__(self, initial_memory, input = None):
+  def __init__(self, initial_memory, inputs = None):
     self.opcodes = {}
     self.memory = [int(i) for i in initial_memory]
     self.instruction_pointer = 0
-    self.input = input
+    if (isinstance(inputs, int)):
+      inputs = [inputs]
+    self.inputs = deque([] if inputs == None else inputs)
     self.output = []
 # TODO consider using update_ip to make all the logic for ip in IntCode and remove ip-offset parameter and put params.length in function?
     self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]], None), 3)
     self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]], None), 3)
-    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.input, None), 1)
+    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.inputs.popleft(), None), 1)
     self.addOpCode(4, 'output', lambda memory, params: (None, self.output.append(memory[params[0]]), None), 1)
     self.addOpCode(5, 'jump-if-true', lambda memory, params: (None, None, None if memory[params[0]] == 0 else memory[params[1]]), 2, 0)
     self.addOpCode(6, 'jump-if-false', lambda memory, params: (None, None, None if memory[params[0]] != 0 else memory[params[1]]), 2, 0)

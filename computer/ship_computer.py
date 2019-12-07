@@ -1,33 +1,47 @@
 import sys
-from collections import deque
+from queue import SimpleQueue, LifoQueue
 
 class ShipComputer:
 
-  def __init__(self, initial_memory, inputs = None):
+  def __init__(self, initial_memory, inputs = None, execute_halt = False):
     self.opcodes = {}
     self.memory = [int(i) for i in initial_memory]
     self.instruction_pointer = 0
     if (isinstance(inputs, int)):
       inputs = [inputs]
-    self.inputs = deque([] if inputs == None else inputs)
-    self.output = []
+    self.inputs = SimpleQueue()
+    if inputs != None:
+      for input in inputs:
+        self.inputs.put(input)
+    self.output = LifoQueue()
+    self.execute_halt = execute_halt
+
 # TODO consider using update_ip to make all the logic for ip in IntCode and remove ip-offset parameter and put params.length in function?
     self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]], None), 3)
     self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]], None), 3)
-    self.addOpCode(3, 'input', lambda memory, params: (params[0], self.inputs.popleft(), None), 1)
-    self.addOpCode(4, 'output', lambda memory, params: (None, self.output.append(memory[params[0]]), None), 1)
+    self.addOpCode(3, 'input', self.process_input, 1) # TODO refactor back in?
+    self.addOpCode(4, 'output', lambda memory, params: (None, self.output.put(memory[params[0]]), None), 1)
     self.addOpCode(5, 'jump-if-true', lambda memory, params: (None, None, None if memory[params[0]] == 0 else memory[params[1]]), 2, 0)
     self.addOpCode(6, 'jump-if-false', lambda memory, params: (None, None, None if memory[params[0]] != 0 else memory[params[1]]), 2, 0)
     self.addOpCode(7, 'less-than', lambda memory, params: (params[2], 1 if memory[params[0]] < memory[params[1]] else 0, None), 3)
     self.addOpCode(8, 'equals', lambda memory, params: (params[2], 1 if memory[params[0]] == memory[params[1]] else 0, None), 3)
     self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0], None), 2)
-    self.addOpCode(99, 'halt', lambda memory, params: (None, None, None), 0)
+    self.addOpCode(99, 'halt', self.halt, 0)
+
+  def process_input(self, memory, params):
+    return (params[0], self.inputs.get(), None)   # nb: blocks
+
+  def halt(self, memory, params):
+    raise StopIteration()
 
   def get_memory(self):
     return self.memory
 
   def get_output(self):
-    return self.output
+    return self.output.get()
+
+  def put_input(self, value):
+    return self.inputs.put(value)
 
   def addOpCode(self, opcode, name, run_function, parmLength, ip_offset=None):
       self.opcodes[opcode] = self.createIntCode(name, run_function, parmLength, ip_offset)
@@ -35,6 +49,8 @@ class ShipComputer:
   def execute(self):
     while self.memory[self.instruction_pointer] != 99:
       self.execute_instruction()
+    if self.execute_halt:
+      raise StopIteration()
     return self.memory
 
   def execute_instruction(self):

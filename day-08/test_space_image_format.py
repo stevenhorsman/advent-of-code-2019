@@ -10,23 +10,20 @@ def test_part1():
   expected = 1088
   assert space_image_format.part1(data, 25, 6) == expected
 
-# def test_part2_example_1():
-#   data = """R8,U5,L5,D3
-#   U7,R6,D4,L4"""
-#   assert space_image_format.part2(data) == 30
+def test_part2_example_1():
+  expected = """01
+10
+"""
+  assert space_image_format.part2("0222112222120000", 2, 2) == expected
 
-# def test_part2_example_2():
-#   data = """R75,D30,R83,U83,L12,D49,R71,U7,L72
-# U62,R66,U55,R34,D71,R55,D58,R83"""
-#   assert space_image_format.part2(data) == 610
-
-# def test_part2_example_3():
-#   data = """R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51
-# U98,R91,D20,R16,D67,R40,U7,R15,U6,R7"""
-#   assert space_image_format.part2(data) == 410
-
-# def test_part2():
-#   with open(space_image_format.input_file) as f:
-#     data = f.read()
-#   expected = 18542
-#   assert space_image_format.part2(data) == expected
+def test_part2():
+  with open(space_image_format.input_file) as f:
+    data = f.read()
+  expected = """1000001100100011001011100
+1000010010100011001010010
+1000010000010101111011100
+1000010110001001001010010
+1000010010001001001010010
+1111001110001001001011100
+"""
+  assert space_image_format.part2(data, 25, 6) == expected

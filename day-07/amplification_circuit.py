@@ -11,13 +11,13 @@ def part1(memory):
   for states in list(perms):
     amps = []
     for i in range(0, 5):
-      amps.append(ShipComputer(program, states[i], True))
+      amps.append(ShipComputer(program, states[i]))
     
     amps[0].put_input(0) # starting input to A
       # amps[i].execute()
     
     for i in range(0, len(amps)):
-      out = next(amps[i].execute_concurrent())
+      out = next(amps[i].execute_concurrent(True))
       #out = amps[i].get_output()
       # out = amps[i].get_output()
       amps[(i+1) % 5].put_input(out)
@@ -32,7 +32,7 @@ def part2(memory):
   for states in list(perms):
     amps = []
     for i in range(0, 5):
-      amps.append(ShipComputer(program, states[i], True))
+      amps.append(ShipComputer(program, states[i]))
     
     amps[0].put_input(0) # starting input to A
       # amps[i].execute()
@@ -40,7 +40,7 @@ def part2(memory):
       i = 0
       while True:
     # for i in range(0, len(amps)):
-        out = next(amps[i].execute_concurrent())
+        out = next(amps[i].execute_concurrent(True))
         #out = amps[i].get_output()
         # out = amps[i].get_output()
         i = (i+1) % 5

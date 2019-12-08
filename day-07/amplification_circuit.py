@@ -11,38 +11,42 @@ def part1(memory):
   for states in list(perms):
     amps = []
     for i in range(0, 5):
-      amps.append(ShipComputer(program, states[i]))
+      amps.append(ShipComputer(program, states[i], True))
     
-    inputs = [0] * 5 # Initial puzzle input
+    amps[0].put_input(0) # starting input to A
+      # amps[i].execute()
+    
     for i in range(0, len(amps)):
-      amps[i].put_input(inputs[i])
-      amps[i].execute()
-      out = amps[i].get_output()
-      inputs[(i+1) % 5] = out
-    vals.append(inputs[0])
+      out = next(amps[i].execute_concurrent())
+      #out = amps[i].get_output()
+      # out = amps[i].get_output()
+      amps[(i+1) % 5].put_input(out)
+    vals.append(amps[0].inputs.get())
   return max(vals)
 
 def part2(memory):
   program = memory.split(",").copy()
   vals = []
-  # perms = permutations([5,6,7,8,9]) 
-  perms = [[9,8,7,6,5]]
+  perms = permutations([5,6,7,8,9]) 
+  # perms = [[9,8,7,6,5]]
   for states in list(perms):
     amps = []
     for i in range(0, 5):
       amps.append(ShipComputer(program, states[i], True))
     
-    inputs = [0] * 5 # Initial puzzle input
+    amps[0].put_input(0) # starting input to A
+      # amps[i].execute()
     try:
+      i = 0
       while True:
-        for i in range(0, len(amps)):
-          amps[i].put_input(inputs[i])
-          amps[i].execute()
-          out = amps[i].get_output()
-          inputs[(i+1) % 5] = out
+    # for i in range(0, len(amps)):
+        out = next(amps[i].execute_concurrent())
+        #out = amps[i].get_output()
+        # out = amps[i].get_output()
+        i = (i+1) % 5
+        amps[i].put_input(out)
     except StopIteration:
-      vals.append(inputs[0])
-  print('vals',vals)
+      vals.append(amps[0].inputs.get())
   return max(vals)
 
 if __name__ == "__main__":

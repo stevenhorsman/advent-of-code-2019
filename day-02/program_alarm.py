@@ -7,7 +7,7 @@ def part1(input, noun="12", verb="2"):
     inputs[2] = verb
     ship_computer = ShipComputer(inputs)
     result = ship_computer.execute()
-    return result[0]
+    return ship_computer.get_memory()[0]
 
 def part2(input):
     for noun in range(1, 100):

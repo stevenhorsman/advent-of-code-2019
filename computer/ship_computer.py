@@ -3,7 +3,7 @@ from queue import SimpleQueue, LifoQueue
 
 class ShipComputer:
 
-  def __init__(self, initial_memory, inputs = None, execute_halt = False):
+  def __init__(self, initial_memory, inputs = None, concurrent_mode = False):
     self.opcodes = {}
     self.memory = [int(i) for i in initial_memory]
     self.instruction_pointer = 0
@@ -14,7 +14,7 @@ class ShipComputer:
       for input in inputs:
         self.inputs.put(input)
     self.output = LifoQueue()
-    self.execute_halt = execute_halt
+    self.concurrent_mode = concurrent_mode
 
 # TODO consider using update_ip to make all the logic for ip in IntCode and remove ip-offset parameter and put params.length in function?
     self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]], None), 3)
@@ -26,13 +26,13 @@ class ShipComputer:
     self.addOpCode(7, 'less-than', lambda memory, params: (params[2], 1 if memory[params[0]] < memory[params[1]] else 0, None), 3)
     self.addOpCode(8, 'equals', lambda memory, params: (params[2], 1 if memory[params[0]] == memory[params[1]] else 0, None), 3)
     self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0], None), 2)
-    self.addOpCode(99, 'halt', self.halt, 0)
+    self.addOpCode(99, 'halt',self.halt, 0)
 
   def process_input(self, memory, params):
     return (params[0], self.inputs.get(), None)   # nb: blocks
 
   def halt(self, memory, params):
-    raise StopIteration()
+    return (None, None, None)
 
   def get_memory(self):
     return self.memory
@@ -46,34 +46,42 @@ class ShipComputer:
   def addOpCode(self, opcode, name, run_function, parmLength, ip_offset=None):
       self.opcodes[opcode] = self.createIntCode(name, run_function, parmLength, ip_offset)
 
+  # def execute(self):
+  #   while self.memory[self.instruction_pointer] != 99:
+  #     self.execute_instruction()
+  #   if self.execute_halt:
+  #     raise StopIteration()
+  #   return self.memory
+
   def execute(self):
-    while self.memory[self.instruction_pointer] != 99:
-      self.execute_instruction()
-    if self.execute_halt:
-      raise StopIteration()
-    return self.memory
+    try:
+      while True:
+        next(self.execute_concurrent())
+    except StopIteration:
+      return
 
-  def execute_instruction(self):
-    instruction = self.memory[self.instruction_pointer]
-    opcode = instruction % 100
-    param_modes = [(instruction // 100 ) % 10, (instruction // 1000 ) % 10, (instruction // 10000 ) % 10]
-    if opcode in self.opcodes.keys():
-      curr_inst = self.opcodes[opcode]
-      parm_length = curr_inst.parameterLength
-      parm_addresses = []
-      for i in range(0, curr_inst.parameterLength):
-        memory_address = self.instruction_pointer + 1 + i
-        if param_modes[i] == 0: # position, not immediate, so dereference
-          memory_address = self.memory[memory_address]
-        parm_addresses.append(memory_address)
-
-      #parameters = self.memory[self.instruction_pointer + 1:self.instruction_pointer + parm_length + 1]
-      # TODO slice the number of arguments
-      curr_inst.run(parm_addresses)
-      # self.instruction_pointer += curr_inst.ip_offset
-    else:
-      sys.stderr.write("Error - IP opcode" + self.memory[self.instruction_pointer])
-    return self.instruction_pointer
+  def execute_concurrent(self):
+    while True:
+      instruction = self.memory[self.instruction_pointer]
+      opcode = instruction % 100
+      param_modes = [(instruction // 100 ) % 10, (instruction // 1000 ) % 10, (instruction // 10000 ) % 10]
+      if opcode in self.opcodes.keys():
+        curr_inst = self.opcodes[opcode]
+        parm_length = curr_inst.parameterLength
+        parm_addresses = []
+        for i in range(0, curr_inst.parameterLength):
+          memory_address = self.instruction_pointer + 1 + i
+          if param_modes[i] == 0: # position, not immediate, so dereference
+            memory_address = self.memory[memory_address]
+          parm_addresses.append(memory_address)
+        curr_inst.run(parm_addresses)
+        if opcode == 99: # halt
+          return
+        if opcode == 4 and self.concurrent_mode: #output
+          yield self.get_output()
+      else:
+        sys.stderr.write("Error - IP opcode" + self.memory[self.instruction_pointer])
+    
 
   def createIntCode(self, name, run_function, parameterLength, ip_offset=None):
     return ShipComputer.IntCode(self, name, run_function, parameterLength, ip_offset)

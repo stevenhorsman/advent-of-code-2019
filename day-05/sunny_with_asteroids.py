@@ -7,8 +7,7 @@ def part1(memory, input = 1):
     memory = memory.split(",").copy()
     ship_computer = ShipComputer(memory, input)
     ship_computer.execute()
-    print('output',ship_computer.get_output())
-    return ship_computer.get_output()[-1]
+    return ship_computer.get_output()
 
 def part2(input):
     pass

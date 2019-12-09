@@ -32,7 +32,9 @@ def check_execute(input, output):
   memory = input.split(",")
   ship_computer = ShipComputer(memory)
   ship_computer.execute()
-  assert ship_computer.get_memory() == [int(i) for i in output.split(",")]
+  expected = [int(i) for i in output.split(",")]
+  expected += ([0] * 1000)
+  assert ship_computer.get_memory() == expected
 
 def execute(initial_memory, input = None):
   memory = initial_memory.split(",")
@@ -136,3 +138,9 @@ def test_compare_to_8_immediate_mode():
 def check_compare_to_8(memory, input, expected):
   ship_computer = execute(memory,input)
   assert ship_computer.get_output() == expected
+
+def test_memory_capacity():
+  program = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
+  expected = [int(i) for i in program.split(",")]
+  ship_computer = execute(program)
+  assert ship_computer.get_all_outputs() == expected

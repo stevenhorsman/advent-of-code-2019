@@ -32,7 +32,9 @@ def check_execute(input, output):
   memory = input.split(",")
   ship_computer = ShipComputer(memory)
   ship_computer.execute()
-  assert ship_computer.get_memory() == [int(i) for i in output.split(",")]
+  expected = [int(i) for i in output.split(",")]
+  expected.append([0] * 1000)
+  assert ship_computer.get_memory() == expected
 
 def execute(initial_memory, input = None):
   memory = initial_memory.split(",")
@@ -47,6 +49,14 @@ def test_jump_if_true_doesnt_jumps():
 def test_jump_if_true_jumps():
   ship_computer = execute("1105,1,6,4,1,99,4,0,99")
   assert ship_computer.get_output() == 1105
+
+def test_relative_base_set():
+  ship_computer = execute("109,2000,109,19,99")
+  assert ship_computer.relative_base == 2019
+
+def test_output_relative_mode():
+  ship_computer = execute("109,2000,204,-1999,99")
+  assert ship_computer.get_output() == 2000
 
 def test_equals_8_position_mode():
   program = "3,9,8,9,10,9,4,9,99,-1,8"
@@ -108,3 +118,18 @@ def test_compare_to_8_immediate_mode():
 def check_compare_to_8(memory, input, expected):
   ship_computer = execute(memory,input)
   assert ship_computer.get_output() == expected
+
+def test_computer_memory_capacity():
+  quine = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99"
+  ship_computer = execute(quine)
+  assert ship_computer.get_output() == quine
+
+def test_handle_big_numbers():
+  program = "1102,34915192,34915192,7,4,7,99,0"
+  ship_computer = execute(program)
+  assert ship_computer.get_output() > 2^15
+
+def test_handle_big_numbers_2():
+  program = "104,1125899906842624,99"
+  ship_computer = execute(program)
+  assert ship_computer.get_output() == 1125899906842624

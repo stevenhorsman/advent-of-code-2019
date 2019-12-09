@@ -6,6 +6,7 @@ class ShipComputer:
   def __init__(self, initial_memory, inputs = None):
     self.opcodes = {}
     self.memory = [int(i) for i in initial_memory]
+    self.memory.append([0] * 1000)
     self.instruction_pointer = 0
     if (isinstance(inputs, int)):
       inputs = [inputs]
@@ -14,6 +15,7 @@ class ShipComputer:
       for input in inputs:
         self.inputs.put(input)
     self.output = LifoQueue()
+    self.relative_base = 0
 
     self.addOpCode(1, 'add', lambda memory, params: (params[2], memory[params[0]] + memory[params[1]], None), 3)
     self.addOpCode(2, 'mul', lambda memory, params: (params[2], memory[params[0]] * memory[params[1]], None), 3)
@@ -23,6 +25,7 @@ class ShipComputer:
     self.addOpCode(6, 'jump-if-false', lambda memory, params: (None, None, None if memory[params[0]] != 0 else memory[params[1]]), 2, 0)
     self.addOpCode(7, 'less-than', lambda memory, params: (params[2], 1 if memory[params[0]] < memory[params[1]] else 0, None), 3)
     self.addOpCode(8, 'equals', lambda memory, params: (params[2], 1 if memory[params[0]] == memory[params[1]] else 0, None), 3)
+    self.addOpCode(9, 'adjust_rel_base', self.adjust_relative_base, 1)
     self.addOpCode(98, 'seti', lambda memory, params: (params[1], params[0], None), 2)
     self.addOpCode(99, 'halt', lambda memory, params: (None, None, None), 0)
 
@@ -31,6 +34,10 @@ class ShipComputer:
 
   def get_output(self):
     return self.output.get()
+
+  def adjust_relative_base(self, memory, params):
+    self.relative_base += memory[params[0]]
+    return (None, None, None)
 
   def put_input(self, value):
     return self.inputs.put(value)
@@ -58,6 +65,8 @@ class ShipComputer:
           memory_address = self.instruction_pointer + 1 + i
           if param_modes[i] == 0: # position, not immediate, so dereference
             memory_address = self.memory[memory_address]
+          if param_modes[i] == 2: # relative
+            memory_address = self.relative_base + self.memory[memory_address]
           parm_addresses.append(memory_address)
         curr_inst.run(parm_addresses)
         if opcode == 99: # halt
@@ -65,7 +74,7 @@ class ShipComputer:
         if opcode == 4 and concurrent_mode: #output
           yield self.get_output()
       else:
-        sys.stderr.write("Error - IP opcode" + self.memory[self.instruction_pointer])
+        sys.stderr.write("Error - IP opcode" + str(opcode))
 
   def createIntCode(self, name, run_function, parameterLength, ip_offset=None):
     return ShipComputer.IntCode(self, name, run_function, parameterLength, ip_offset)

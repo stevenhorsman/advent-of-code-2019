@@ -5,14 +5,10 @@ from collections import defaultdict
 input_file = 'day-10/input.txt'
 
 def get_asteriod_list(input):
-  asteriod_list = []
-  lines = input.split()
-  for y in range(0, len(lines)):
-    line = [char for char in lines[y]]
-    for x in range(0, len(line)):
-      if line[x] == '#':
-        asteriod_list.append((x,y))
-  return asteriod_list
+  # From https://github.com/sparkyb/adventofcode/blob/master/2019/day10.py
+  # enumerate converts line in (index, value) pairs
+  return [(x, y) for y, line in enumerate(input.split())
+          for x, c in enumerate(line) if c == '#']
 
 def find_best_asteroid(asteriod_list):
   seen_map = dict((asteriod, get_no_visible_asteroids(asteriod, asteriod_list)) for asteriod in asteriod_list)
@@ -36,20 +32,8 @@ def get_other_asteroids(asteriod, asteriods):
 def get_angle_mag(asteriod, other):
   x_diff = (other[0] - asteriod[0])
   y_diff = (asteriod[1] - other[1]) # Our y system is backwards - up is negative
-  # atan 2 works out the anticlockwise angle from the x-axis
-  angle = (math.pi/2 - math.atan2(y_diff,x_diff)) % math.tau,
+  angle = math.atan2(x_diff,y_diff) % math.tau,
   return (angle, math.hypot(x_diff,y_diff))
-  # atan2 equiv to 
-  # angle = math.pi/2
-  # if y_diff != 0:
-  #   angle = math.atan(round(x_diff/y_diff,5))
-  # elif x_diff < 0:
-  #   angle += math.pi
-
-  # if y_diff < 0:
-  #   angle += math.pi
-  #   angle = angle % math.tau
-  # return angle
 
 def part2(input, number=200):
   asteriod_list = get_asteriod_list(input)

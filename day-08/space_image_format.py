@@ -40,20 +40,15 @@ def part2(input, width, height):
   # From https://github.com/frerich/aoc2019/blob/master/python/day8/day8.py
   # merged = (next(n for n in stack if n != '2') for stack in zip(*layers))
   # rendered = ''.join(' ' if n == '0' else '#' for n in merged)
-  image = []
+  output = ""
   for h in range(0,height):
     line = []
     for w in range(0,width):
-      pixel = ' '
       for l in range(0, len(layers)):
         if layers[l][h][w] != 2:
-          pixel = layers[l][h][w]
+          output += '.' if layers[l][h][w] == 0 else "#"
           break
-      line.append(pixel)
-    image.append(line)
-
-  output = '\n'.join(["".join(map(str, line)) for line in image])
-
+    output += '\n'
   return output
     
 if __name__ == "__main__":

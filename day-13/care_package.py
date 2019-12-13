@@ -57,7 +57,7 @@ def part2(memory):
       elif tile == 3:
         paddle_x = x
 
-    print(print_grid(grid,score))
+    # print(print_grid(grid,score))
     if list(grid.values()).count(2) == 0:
       return score
     input = 0

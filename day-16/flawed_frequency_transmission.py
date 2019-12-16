@@ -1,16 +1,13 @@
-import itertools
 import math
 
 input_file = 'day-16/input.txt'
-
-base_pattern = [0,1,0,-1]
 
 def transmission(input, phases = 100):
   curr_phase = [int(char) for char in input]
   for i in range(0,phases):
     new_phase = []
     for j in range(0,len(input)):
-      pattern_length = (j+1) * len(base_pattern)
+      pattern_length = (j+1) * 4 #base patten length
       patten_repeats = math.ceil(len(input) / pattern_length)
       total = 0
       for k in range(0,patten_repeats):
@@ -26,16 +23,13 @@ def part1(input, phases = 100):
   curr_phase = transmission(input, phases)
   return "".join(map(str, curr_phase[0:8]))
 
-# Hack from reddit to show that we can just use a partial sum calculation
+# we can just use a partial sum calculation as after 1/2 way we can use the unitary matrix
 def transmission2(input, phases = 100):
   curr_phase = [int(char) for char in input]
-  # value(digit, phase) = value(digit + 1, phase) + value(digit, phase - 1)
   for i in range(0,phases):
-    partial_sum = sum(curr_phase)
-    for j in range(0, len(input)):
-        curr_num = curr_phase[j]
-        curr_phase[j] = abs(partial_sum) % 10
-        partial_sum -= curr_num
+    curr_phase.append(0) # add zero on the end so that the end value works
+    for j in range(len(input),0,-1):
+      curr_phase[j-1] = abs(curr_phase[j] + curr_phase[j-1]) % 10
   return curr_phase
 
 def part2(input, phases = 100):

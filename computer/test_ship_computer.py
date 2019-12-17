@@ -33,7 +33,6 @@ def check_execute(input, output):
   ship_computer = ShipComputer(memory)
   ship_computer.execute()
   expected = [int(i) for i in output.split(",")]
-  expected += ([0] * 1000)
   assert ship_computer.get_memory() == expected
 
 def execute(initial_memory, input = None):

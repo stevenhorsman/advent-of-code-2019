@@ -12,7 +12,6 @@ class ShipComputer:
   def __init__(self, initial_memory, inputs = None):
     self.opcodes = {}
     self.memory = [int(i) for i in initial_memory]
-    self.memory += [0] * 1000
     self.instruction_pointer = 0
     if (isinstance(inputs, int)):
       inputs = [inputs]
@@ -138,8 +137,13 @@ class ShipComputer:
       self.ip_offset = ip_offset if ip_offset != None else parameterLength + 1
 
     def run(self, params):
+      for address in params[:-1]:
+        if address >= len(self.computer.memory):
+          self.computer.memory += [0] * (10 + address - len(self.computer.memory))
       output, result, new_ip = self.run_function(self.computer.memory, params)
       if (output != None):
+        if output >= len(self.computer.memory):
+          self.computer.memory += [0] * (10 + output - len(self.computer.memory))
         self.computer.memory[output] = result
       if (new_ip != None):
         self.computer.instruction_pointer = new_ip

@@ -84,7 +84,6 @@ def test_part2_example_2():
 ###############"""[1:]
   assert many_worlds_interpretation.part2(data) == 24
 
-@pytest.mark.skip(reason="doesn't conform to problem description")
 def test_part2_example_3():
   data = """
 #############

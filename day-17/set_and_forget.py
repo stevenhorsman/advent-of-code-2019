@@ -78,6 +78,7 @@ def part2(memory):
   path = find_path(scaffolds, x, y, curr_dir)
   print(path)
 
+  # TODO - create greedy algoritm and remove until nothing left (guess if size < 5?) then rank patterns, look for duplicates etc
   (pattern,new_path) = remove_shortest_end(path)
   (pattern_2,pattern_3) = remove_shortest_end(new_path)
   patterns=[pattern, pattern_2, pattern_3]
@@ -102,8 +103,6 @@ def part2(memory):
 
   instructions = [','.join(main_routine),','.join(patterns[0]).replace('R','R,').replace('L','L,'), ','.join(patterns[1]).replace('R','R,').replace('L','L,'), ','.join(patterns[2]).replace('R','R,').replace('L','L,'),'n']
 
-  # Mark's 
-  # instructions = ['A,A,B,C,C,A,C,B,C,B', 'L,4,L,4,L,6,R,10,L,6','L,12,L,6,R,10,L,6','R,8,R,10,L,6','n']
   # instructions = ['A,B,A,B,C,C,B,A,B,C', 'L,12,L,10,R,8,L,12','R,8,R,10,R,12','L,10,R,12,R,8','n']
   for instruction in instructions:
     inputs = [ ord(c) for c in instruction+'\n']

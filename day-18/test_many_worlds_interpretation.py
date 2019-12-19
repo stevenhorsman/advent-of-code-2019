@@ -48,13 +48,24 @@ def test_part1_example_4():
   assert many_worlds_interpretation.part1(data) == 136
 
 def test_part1_example_5():
-  data = """########################
+  data = """
+########################
 #@..............ac.GI.b#
 ###d#e#f################
 ###A#B#C################
 ###g#h#i################
 ########################"""[1:]
   assert many_worlds_interpretation.part1(data) == 81
+
+def test_part1_example_6():
+  data = """
+########################
+#@..............ac.GI.b#
+###d###f################
+###A###C################
+###g###i################
+########################"""[1:]
+  assert many_worlds_interpretation.part1(data) == 61
 
 def test_part1():
   with open(many_worlds_interpretation.input_file) as f:

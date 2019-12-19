@@ -16,10 +16,24 @@ class Vertex:
       self.edges.append(Edge(vertices[k], distance, doors))
 
   def get_available_keys(self, current_keys):
+    #TODO return self.get_available_keys_traverse([], current_keys, 0)
     found = {}
     for e in self.edges:
       if e.dest.label not in current_keys and e.is_unblocked(current_keys):
         found[e.dest] = e.weight
+    return found
+
+#TODO - fix to do a breadth-first-search - example d->b goes via f
+  def get_available_keys_traverse(self, visited, current_keys, distance_offset):
+    found = {}
+    visited.append(self.label)
+    for e in self.edges:
+      if e.dest.label not in visited and e.is_unblocked(current_keys):
+          visited.append(e.dest.label)
+          if e.dest.label not in current_keys: # Got the key, so don't add to found
+            found[e.dest] = distance_offset + e.weight
+          else: # If found a new key, don't bother exploring this branch more
+            found.update(e.dest.get_available_keys_traverse(visited, current_keys, distance_offset + e.weight))
     return found
 
 class Edge:
@@ -97,7 +111,9 @@ def shortest_route(robots, owned_keys):
   lengths = []
   for vertex, (distance, index) in available_keys.items():
     nstarts = tuple(vertex if i == index else p for i, p in enumerate(robots))
-    lengths.append(distance + shortest_route(nstarts, owned_keys + [vertex.label]))
+    length = distance + shortest_route(nstarts, owned_keys + [vertex.label])
+    # print('At',robot_names, 'with keys',owned_keys,length)
+    lengths.append(length)
   already_seen[robot_names, ''.join(sorted(owned_keys))] = min(lengths)
   return min(lengths)
 

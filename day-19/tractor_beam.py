@@ -66,7 +66,7 @@ def part2(memory):
   for offset in range(-10,10):
     y_offset = approx_y + offset
     start, stop = find_beam_edges(memory, y_offset, round(start_ratio*y_offset), round(stop_ratio*y_offset))
-    if stop - start >= 100 and is_tractor(memory, stop - 100, y_offset + 99):
+    if is_tractor(memory, stop - 100, y_offset + 99):
       return (stop - 100) * 10000 + y_offset
 
 if __name__ == "__main__":

@@ -24,19 +24,37 @@ def part1(input, phases = 100):
   return "".join(map(str, curr_phase[0:8]))
 
 # we can just use a partial sum calculation as after 1/2 way we can use the unitary matrix
-def transmission2(input, phases = 100):
-  curr_phase = [int(char) for char in input]
-  for i in range(0,phases):
-    curr_phase.append(0) # add zero on the end so that the end value works
-    for j in range(len(input),0,-1):
-      curr_phase[j-1] = abs(curr_phase[j] + curr_phase[j-1]) % 10
+def transmission2(curr_phase, phases = 100):
+  input_length = len(curr_phase)
+  curr_phase.append(0) # add zero on the end so that the end value works
+  for i in range(phases):
+    for j in range(input_length,0,-1):
+      # Quicker than curr_phase[j-1] = abs(curr_phase[j] + curr_phase[j-1]) % 10
+      temp = curr_phase[j] + curr_phase[j-1]
+      if temp >= 0:
+        curr_phase[j-1] = temp % 10
+      else:
+        curr_phase[j-1] = (-temp) % 10
+  return curr_phase
+
+# Slightly quicker implementation from https://www.reddit.com/r/adventofcode/comments/ebai4g/2019_day_16_solutions/fb3ksil/
+def transmission2b(curr_phase, phases = 100):
+  for i in range(phases):
+    partial_sum = sum(curr_phase)
+    for j in range(len(curr_phase)):
+      t = partial_sum
+      partial_sum -= curr_phase[j]
+      # Quicker than curr_phase[j] = abs(t) % 10
+      if t >= 0:
+        curr_phase[j] = t % 10
+      else:
+        curr_phase[j] = (-t) % 10
   return curr_phase
 
 def part2(input, phases = 100):
   offset = int(input[0:7])
-  input = input * 10000
-
-  curr_phase = transmission2(input[offset:], phases)
+  input = list(map(int, input)) * 10000
+  curr_phase = transmission2b(input[offset:], phases)
   return "".join(map(str, curr_phase[0:8]))
 
 if __name__ == "__main__":

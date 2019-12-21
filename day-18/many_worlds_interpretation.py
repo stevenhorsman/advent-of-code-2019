@@ -16,25 +16,37 @@ class Vertex:
       self.edges.append(Edge(vertices[k], distance, doors))
 
   def get_available_keys(self, current_keys):
-    #TODO return self.get_available_keys_traverse([], current_keys, 0)
+    others = self.find_other_keys(current_keys)
+    return {k: v for k, v in others.items() if k.label not in current_keys}
+    # NOTE 1: alternative to other lines - needs note 2
     found = {}
     for e in self.edges:
       if e.dest.label not in current_keys and e.is_unblocked(current_keys):
         found[e.dest] = e.weight
     return found
 
-#TODO - fix to do a breadth-first-search - example d->b goes via f
-  def get_available_keys_traverse(self, visited, current_keys, distance_offset):
-    found = {}
-    visited.append(self.label)
-    for e in self.edges:
-      if e.dest.label not in visited and e.is_unblocked(current_keys):
-          visited.append(e.dest.label)
-          if e.dest.label not in current_keys: # Got the key, so don't add to found
-            found[e.dest] = distance_offset + e.weight
-          else: # If found a new key, don't bother exploring this branch more
-            found.update(e.dest.get_available_keys_traverse(visited, current_keys, distance_offset + e.weight))
-    return found
+  # Sort of dijkstra's, but stop paths when we find a new key
+  def find_other_keys(self, current_keys):
+    dist = {}
+    dist[self] = 0
+    queue = []
+    queue.append(self)
+
+    while queue:
+      u = min(queue, key=lambda vertex: dist[vertex])
+      queue.remove(u)
+
+      connected = [e for e in u.edges if e.is_unblocked(current_keys)]
+      for e in connected:
+        alt = dist[u] + e.weight
+        if e.dest not in dist:
+          if e.dest.label in current_keys: # If found a new key, don't bother exploring this branch more
+            queue.append(e.dest)
+          dist[e.dest] = alt
+        if alt < dist[e.dest]:
+          dist[e.dest] = alt
+    return dist
+
 
 class Edge:
   def __init__(self, dest, weight, blockers):
@@ -80,7 +92,7 @@ def find_paths(grid, start):
         queue.append((doors + [value.lower()], neighbour))
       elif 'a' <= value <= 'z':
         found[value] = distance[neighbour], doors[:]
-        queue.append((doors, neighbour)) #TODO - remove this line and instead let edges find their other edge in vertex.getAvailableKey
+        # queue.append((doors, neighbour)) # NOTE 2: uncommented for note 1
       else:
         queue.append((doors, neighbour))
   return found

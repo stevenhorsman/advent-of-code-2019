@@ -34,7 +34,7 @@ def main(template_day = template_day_default, template_name = template_name_defa
         shutil.copyfile("computer" + os.path.sep + "ship_computer.py", day_string + os.path.sep + "ship_computer.py")
 
     input_url='https://adventofcode.com/2019/day/'+str(int(day))+'/input'
-    session_id="53616c7465645f5fa025cd768e00b434bf6df6f8043e3905667d29f080f83325842d82af11200dd3a6bf708482188ea0"
+    session_id="53616c7465645f5fb190e8372a4b3d57cc10c9e7c83327d147a02b190ec8242aeb7c1332f051fb6572e77a55baf25970"
     cookies = {"session": session_id}
     headers = {"User-Agent": "advent-of-code-data v0.8.3"}
 

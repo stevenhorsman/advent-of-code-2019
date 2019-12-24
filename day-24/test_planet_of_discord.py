@@ -28,5 +28,5 @@ def test_part2_example_1():
 def test_part2():
   with open(planet_of_discord.input_file) as f:
     data = f.read()
-  expected = 1953 # too high
+  expected = 1953
   assert planet_of_discord.part2(data) == expected

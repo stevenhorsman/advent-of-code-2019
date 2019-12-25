@@ -1,2 +1,3 @@
 requests
 bidict
+# pip install with /usr/local/opt/python/bin/python3.7 -m pip install -r requirements.txt --user
